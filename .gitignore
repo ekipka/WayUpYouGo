@@ -345,6 +345,8 @@ node_modules/
 
 # Visual Studio 6 build log
 *.plg
+*.vsconfig
+*.collabignore
 
 # Visual Studio 6 workspace options file
 *.opt
