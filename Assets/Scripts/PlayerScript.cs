@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class PlayerScript : MonoBehaviour
 {
-    
 
-    public float moveSpeedHorizontal = 1f;
-    public float moveSpeedVertical = 1f;
+    public float moveSpeedHorizontal = 10f;
+    public float moveSpeedVertical = 200f;
+    public bool isGrounded;
+    public bool isTouchingWall;
+
     private BoxCollider2D playerCollision;
-
     private Rigidbody2D playerRB;
+
     private float ScreenWidth;
     private float ScreenHeight;
 
@@ -35,12 +37,12 @@ public class PlayerScript : MonoBehaviour
             if (Input.GetTouch(i).position.x > ScreenWidth / 2)
             {
                 //move right
-                RunCharacter(moveSpeedHorizontal, 0);
+                RunCharacterAddFocrce(moveSpeedHorizontal, 0);
             }
             if (Input.GetTouch(i).position.x < ScreenWidth / 2)
             {
                 //move left
-                RunCharacter(-moveSpeedHorizontal, 0);
+                RunCharacterAddFocrce(-moveSpeedHorizontal, 0);
             }
             /*
             if (Input.GetTouch(i).position.y > ScreenHeight / 2)
@@ -61,16 +63,86 @@ public class PlayerScript : MonoBehaviour
     void FixedUpdate()
     {
 #if UNITY_EDITOR
-        Debug.Log(playerCollision.IsTouchingLayers(7));
-        if(playerCollision.IsTouchingLayers(7)==true)
-        RunCharacter(Input.GetAxis("Horizontal")* moveSpeedHorizontal * Time.deltaTime, Input.GetAxis("Vertical")* moveSpeedVertical * Time.deltaTime);
+        //stop player from rotating 
+        if(playerRB.transform.rotation.z !=0)
+        {
+            Quaternion target = Quaternion.Euler(0, 0, 0);
+            playerRB.transform.rotation = Quaternion.Slerp(transform.rotation, target, Time.deltaTime * 100.0f);
+        }
+        if (!isTouchingWall && (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0))
+        {
+            RunCharacterAddFocrce(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        }
+
 #endif
     }
 
-    private void RunCharacter(float horizontalInput, float verticalInput)
+    private void RunCharacterAddFocrce(float horizontalInput, float verticalInput)
     {
         //move player
-        //playerRB.AddForce(new Vector2(horizontalInput * Time.deltaTime, verticalInput * Time.deltaTime));//* moveSpeed * Time.deltaTime
-        playerRB.velocity = new Vector2(horizontalInput * Time.deltaTime, verticalInput * Time.deltaTime);
+        if (isGrounded && verticalInput > 0)
+        {
+            Debug.Log(playerRB.velocity.y);
+            playerRB.AddForce(new Vector2(horizontalInput * moveSpeedHorizontal, 0.5f * moveSpeedVertical));
+        }
+        else if(!isTouchingWall)
+        {
+            playerRB.AddForce(new Vector2(horizontalInput * moveSpeedHorizontal, playerRB.velocity.y));
+        }
+    }
+
+    private void BounceCharacter(float horizontalInput, float verticalInput)
+    {
+        //move player
+        if (isGrounded && verticalInput > 0)
+        {
+            Debug.Log(playerRB.velocity.y);
+            //playerRB.AddForce(new Vector2(horizontalInput * moveSpeedHorizontal, 0.5f * moveSpeedVertical));
+            playerRB.velocity = new Vector2(horizontalInput * moveSpeedHorizontal, 0.5f * 10);
+        }
+        else if (!isTouchingWall)
+        {
+            playerRB.velocity = new Vector2(horizontalInput * moveSpeedHorizontal, playerRB.velocity.y);
+        }
+    }
+
+
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer == 6 //check the int value in layer manager(User Defined starts at 6) 
+            && !isGrounded)
+        {
+            isGrounded = true;
+        }
+        if (collision.gameObject.layer == 7 && !isGrounded)//right wall
+        {
+            BounceCharacter(-0.5f, 1);
+
+            isTouchingWall = true;
+        }
+        if (collision.gameObject.layer == 8 && !isGrounded)
+        {
+            BounceCharacter(1f, 1);
+            isTouchingWall = true;
+        }
+    }
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        //isGrounded = collision.gameObject.layer == 6 && isGrounded ? false : true;
+
+        if (collision.gameObject.layer == 6
+            && isGrounded)
+        {
+            isGrounded = false;
+        }
+        if (collision.gameObject.layer == 7 && !isGrounded)
+        {
+            isTouchingWall = false;
+        }
+        if (collision.gameObject.layer == 8 && !isGrounded)
+        {
+            isTouchingWall = false;
+        }
     }
 }

@@ -164,7 +164,7 @@ GameObject:
   - component: {fileID: 193236125}
   - component: {fileID: 193236124}
   - component: {fileID: 193236123}
-  m_Layer: 6
+  m_Layer: 8
   m_Name: LeftWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -303,7 +303,7 @@ GameObject:
   - component: {fileID: 456676734}
   - component: {fileID: 456676733}
   - component: {fileID: 456676732}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: RightWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -720,7 +720,7 @@ Transform:
   m_GameObject: {fileID: 727752192}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.15, y: 0.65, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
@@ -734,11 +734,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 727752192}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7433909c661b2ce4799963c74017ac4a, type: 3}
+  m_Script: {fileID: 11500000, guid: 84ce30275abfbc7459d1e75a9836813e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeedHorizontal: 1
-  moveSpeedVertical: 1
+  moveSpeedHorizontal: 10
+  moveSpeedVertical: 200
+  isGrounded: 0
+  isTouchingWall: 0
 --- !u!50 &727752196
 Rigidbody2D:
   serializedVersion: 4
@@ -753,13 +755,13 @@ Rigidbody2D:
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDrag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 0
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 954f79b6bd81cae46b2bd13fa5efe9cc, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &727752197
 BoxCollider2D:
   m_ObjectHideFlags: 0
