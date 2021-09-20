@@ -1,18 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.UI;
 using UnityEngine;
 
 public class GameCamera : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public Transform target;
+    public float cameraFollowSpeed;
+    public float cameraContinuosSpeed;
+    public Vector3 offset;  // camera distance from the player
 
-    // Update is called once per frame
-    void Update()
+    private void LateUpdate()
     {
+        Vector3 oldCameraPos = transform.position;
+        Vector3 newCameraPos = new Vector3(oldCameraPos.x,
+            oldCameraPos.y + cameraContinuosSpeed * Time.deltaTime, oldCameraPos.z);
         
+        transform.position = Vector3.Lerp(oldCameraPos, newCameraPos, cameraContinuosSpeed);
     }
 }

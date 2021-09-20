@@ -117,13 +117,13 @@ public class PlayerScript : MonoBehaviour
         }
         if (collision.gameObject.layer == 7 && !isGrounded)//right wall
         {
-            BounceCharacter(-0.5f, 1);
+            BounceCharacter(-0.1f, 1);
 
             isTouchingWall = true;
         }
         if (collision.gameObject.layer == 8 && !isGrounded)
         {
-            BounceCharacter(1f, 1);
+            BounceCharacter(0.1f, 1);
             isTouchingWall = true;
         }
     }
