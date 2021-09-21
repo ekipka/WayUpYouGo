@@ -5,17 +5,41 @@ using UnityEngine;
 
 public class GameCamera : MonoBehaviour
 {
-    public Transform target;
+    public Rigidbody2D target;
+    public Transform cameraMask;
     public float cameraFollowSpeed;
     public float cameraContinuosSpeed;
     public Vector3 offset;  // camera distance from the player
 
-    private void LateUpdate()
+    private bool startMovingCamera;
+
+    void Start()
     {
-        Vector3 oldCameraPos = transform.position;
-        Vector3 newCameraPos = new Vector3(oldCameraPos.x,
-            oldCameraPos.y + cameraContinuosSpeed * Time.deltaTime, oldCameraPos.z);
+        startMovingCamera = false;
+    }
+
+    private void FixedUpdate()
+    {
+        float targetVelocity = target.velocity.y;
         
-        transform.position = Vector3.Lerp(oldCameraPos, newCameraPos, cameraContinuosSpeed);
+        
+        Vector3 oldCameraPos = transform.position;
+        if(target.transform.position.y > cameraMask.position.y)
+        {
+            startMovingCamera = true;
+            Vector3 newCameraPos = new Vector3(oldCameraPos.x,
+            oldCameraPos.y + targetVelocity * Time.deltaTime, oldCameraPos.z);
+
+            transform.position = Vector3.Lerp(oldCameraPos, newCameraPos, targetVelocity);
+        }
+        else if(startMovingCamera == true)
+        {
+            
+            Vector3 newCameraPos = new Vector3(oldCameraPos.x,
+            oldCameraPos.y + cameraContinuosSpeed * Time.deltaTime, oldCameraPos.z);
+
+            transform.position = Vector3.Lerp(oldCameraPos, newCameraPos, cameraContinuosSpeed);
+        }
+        
     }
 }

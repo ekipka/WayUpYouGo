@@ -16,6 +16,9 @@ public class PlayerScript : MonoBehaviour
     private float ScreenWidth;
     private float ScreenHeight;
 
+    private float playerVelocityX;
+    private float playerVelocityY;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -71,6 +74,7 @@ public class PlayerScript : MonoBehaviour
         }
         if (!isTouchingWall && (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0))
         {
+            Debug.Log(playerRB.velocity.y + Input.GetAxis("Vertical"));
             RunCharacterAddFocrce(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         }
 
@@ -79,10 +83,10 @@ public class PlayerScript : MonoBehaviour
 
     private void RunCharacterAddFocrce(float horizontalInput, float verticalInput)
     {
+        
         //move player
         if (isGrounded && verticalInput > 0)
         {
-            Debug.Log(playerRB.velocity.y);
             playerRB.AddForce(new Vector2(horizontalInput * moveSpeedHorizontal, 0.5f * moveSpeedVertical));
         }
         else if(!isTouchingWall)
@@ -93,37 +97,39 @@ public class PlayerScript : MonoBehaviour
 
     private void BounceCharacter(float horizontalInput, float verticalInput)
     {
-        //move player
-        if (isGrounded && verticalInput > 0)
+        //bounce player off the wall
+        if (isGrounded)
         {
-            Debug.Log(playerRB.velocity.y);
-            //playerRB.AddForce(new Vector2(horizontalInput * moveSpeedHorizontal, 0.5f * moveSpeedVertical));
-            playerRB.velocity = new Vector2(horizontalInput * moveSpeedHorizontal, 0.5f * 10);
+            playerRB.velocity = new Vector2(horizontalInput, 0);
         }
-        else if (!isTouchingWall)
+        else
         {
-            playerRB.velocity = new Vector2(horizontalInput * moveSpeedHorizontal, playerRB.velocity.y);
+            playerRB.velocity = new Vector2(horizontalInput, horizontalInput/3 * verticalInput );
         }
     }
 
 
-
+    
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.layer == 6 //check the int value in layer manager(User Defined starts at 6) 
-            && !isGrounded)
+
+
+        if (collision.gameObject.layer == 6 //platforms, ground layer
+            && !isGrounded && playerRB.velocity.y == 0)
         {
+            
             isGrounded = true;
         }
-        if (collision.gameObject.layer == 7 && !isGrounded)//right wall
+        if (collision.gameObject.layer == 7)//right wall
         {
-            BounceCharacter(-0.1f, 1);
-
             isTouchingWall = true;
+            BounceCharacter(playerVelocityX * (-1), playerVelocityY * (-1));
+
+            
         }
-        if (collision.gameObject.layer == 8 && !isGrounded)
+        if (collision.gameObject.layer == 8)//left wall
         {
-            BounceCharacter(0.1f, 1);
+            BounceCharacter(playerVelocityX * (-1), playerVelocityY);
             isTouchingWall = true;
         }
     }
@@ -136,13 +142,19 @@ public class PlayerScript : MonoBehaviour
         {
             isGrounded = false;
         }
-        if (collision.gameObject.layer == 7 && !isGrounded)
+        if (collision.gameObject.layer == 7)
         {
             isTouchingWall = false;
         }
-        if (collision.gameObject.layer == 8 && !isGrounded)
+        if (collision.gameObject.layer == 8)
         {
             isTouchingWall = false;
         }
+    }
+
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        playerVelocityX = playerRB.velocity.x;
+        playerVelocityY = playerRB.velocity.y;
     }
 }
