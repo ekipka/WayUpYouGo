@@ -12,23 +12,26 @@ public class PlatformSpawner : MonoBehaviour
     public float maxPlatformLength;
     public float minPlatformVerticalDistance;
     public float maxPlatformVerticalDistance;
-    
-    private Vector3 platformSpawnPosition;
+
+    // max left and right platform spawn coordinates
+    private float wallsDistanceL = -1.4f;
+    private float wallsDistanceR = 1.4f; 
 
     void Start()
     {
-        platformSpawnPosition = transform.position;
         InvokeRepeating(nameof(SpawnPlatform), 2, 1);
     }
 
     public void SpawnPlatform()
     {
-        GameObject newPlatform = Instantiate(platformPrefab, platformSpawnPosition, Quaternion.identity);
-        
-        float randomDistance = RandomiseNumber(minPlatformVerticalDistance, maxPlatformVerticalDistance);
+        float randomVerticalDistance = RandomiseNumber(minPlatformVerticalDistance, maxPlatformVerticalDistance);
+        float randomHorizontalDistance = RandomiseNumber(wallsDistanceL, wallsDistanceR);
         float randomSize = RandomiseNumber(minPlatformLength, maxPlatformLength);
-        
-        platformSpawnPosition.y = transform.position.y + randomDistance;
+       
+        transform.position = new Vector3(transform.localPosition.x + randomHorizontalDistance, 
+            transform.localPosition.y + randomVerticalDistance, transform.localPosition.z);
+
+        GameObject newPlatform = Instantiate(platformPrefab,  transform.position, Quaternion.identity);
         newPlatform.transform.localScale = new Vector3(randomSize, 0.12f, 1f);  // TODO podmienic statyczne wartosci na pobierane z edytora
     }
     
